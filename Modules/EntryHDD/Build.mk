@@ -1,0 +1,1 @@
+EntryHDD_OBJINIT := Build/Arch-Objects/EntryHDD/i8086/Init.o

@@ -73,21 +73,21 @@ Build/Binaries/$2-$1.sys: Build/Binaries/$2/$1.sys
 endef
 
 define __ARCH_FILES
-$1_OBJC += $$(addprefix Build/Arch-Objects/$1/$2/,$$(patsubst %.c,%.o,$$(shell find -L Modules/$1/Arch/$2/Source -type f -name '*.c' | sed 's/Modules\/$1\/Arch\/$2\/Source\///g')))
-$1_OBJCXX += $$(addprefix Build/Arch-Objects/$1/$2/,$$(patsubst %.cpp,%.o,$$(shell find -L Modules/$1/Arch/$2/Source -type f -name '*.cpp' | sed 's/Modules\/$1\/Arch\/$2\/Source\///g')))
-$1_OBJASM += $$(addprefix Build/Arch-Objects/$1/$2/,$$(patsubst %.asm,%.o,$$(shell find -L Modules/$1/Arch/$2/Source -type f -name '*.asm' | sed 's/Modules\/$1\/Arch\/$2\/Source\///g')))
+$1_OBJC += $$(addprefix Build/Arch-Objects/$1/$2/,$$(patsubst %.c,%.o,$$(shell find -L Modules/$1/Arch/$2/Source -type f -name '*.c' 2>&1 | grep -v find | sed 's/Modules\/$1\/Arch\/$2\/Source\///g')))
+$1_OBJCXX += $$(addprefix Build/Arch-Objects/$1/$2/,$$(patsubst %.cpp,%.o,$$(shell find -L Modules/$1/Arch/$2/Source -type f -name '*.cpp' 2>&1 | grep -v find | sed 's/Modules\/$1\/Arch\/$2\/Source\///g')))
+$1_OBJASM += $$(addprefix Build/Arch-Objects/$1/$2/,$$(patsubst %.asm,%.o,$$(shell find -L Modules/$1/Arch/$2/Source -type f -name '*.asm' 2>&1 | grep -v find | sed 's/Modules\/$1\/Arch\/$2\/Source\///g')))
 
-$1_DEPC += $$(addprefix Build/Arch-Dependencies/$1/$2/,$$(patsubst %.c,%.d,$$(shell find -L Modules/$1/Arch/$2/Source -type f -name '*.c' | sed 's/Modules\/$1\/Arch\/$2\/Source\///g')))
-$1_DEPCXX += $$(addprefix Build/Arch-Dependencies/$1/$2/,$$(patsubst %.cpp,%.d,$$(shell find -L Modules/$1/Arch/$2/Source -type f -name '*.cpp' | sed 's/Modules\/$1\/Arch\/$2\/Source\///g')))
-$1_INCASM := $$(shell find -L Modules/$1/Arch/$2/Source -type f -name '*.inc')
+$1_DEPC += $$(addprefix Build/Arch-Dependencies/$1/$2/,$$(patsubst %.c,%.d,$$(shell find -L Modules/$1/Arch/$2/Source -type f -name '*.c' 2>&1 | grep -v find | sed 's/Modules\/$1\/Arch\/$2\/Source\///g')))
+$1_DEPCXX += $$(addprefix Build/Arch-Dependencies/$1/$2/,$$(patsubst %.cpp,%.d,$$(shell find -L Modules/$1/Arch/$2/Source -type f -name '*.cpp' 2>&1 | grep -v find | sed 's/Modules\/$1\/Arch\/$2\/Source\///g')))
+$1_INCASM := $$(shell find -L Modules/$1/Arch/$2/Source -type f -name '*.inc' 2>&1 | grep -v find)
 endef
 
 define __FILES
-$1_OBJC := $$(addprefix Build/Objects/$1/,$$(patsubst %.c,%.o,$$(shell find -L Modules/$1/Source -type f -name '*.c' | sed 's/Modules\/$1\/Source\///g')))
-$1_OBJCXX := $$(addprefix Build/Objects/$1/,$$(patsubst %.cpp,%.o,$$(shell find -L Modules/$1/Source -type f -name '*.cpp' | sed 's/Modules\/$1\/Source\///g')))
+$1_OBJC := $$(addprefix Build/Objects/$1/$2/,$$(patsubst %.c,%.o,$$(shell find -L Modules/$1/Source -type f -name '*.c' 2>&1 | grep -v find | sed 's/Modules\/$1\/Source\///g')))
+$1_OBJCXX := $$(addprefix Build/Objects/$1/$2/,$$(patsubst %.cpp,%.o,$$(shell find -L Modules/$1/Source -type f -name '*.cpp' 2>&1 | grep -v find | sed 's/Modules\/$1\/Source\///g')))
 
-$1_DEPC := $$(addprefix Build/Dependencies/$1/,$$(patsubst %.c,%.d,$$(shell find -L Modules/$1/Source -type f -name '*.c' | sed 's/Modules\/$1\/Source\///g')))
-$1_DEPCXX := $$(addprefix Build/Dependencies/$1/,$$(patsubst %.cpp,%.d,$$(shell find -L Modules/$1/Source -type f -name '*.cpp' | sed 's/Modules\/$1\/Source\///g')))
+$1_DEPC := $$(addprefix Build/Dependencies/$1/$2/,$$(patsubst %.c,%.d,$$(shell find -L Modules/$1/Source -type f -name '*.c' 2>&1 | grep -v find | sed 's/Modules\/$1\/Source\///g')))
+$1_DEPCXX := $$(addprefix Build/Dependencies/$1/$2/,$$(patsubst %.cpp,%.d,$$(shell find -L Modules/$1/Source -type f -name '*.cpp' 2>&1 | grep -v find | sed 's/Modules\/$1\/Source\///g')))
 endef
 
 define __DEPENDENCIES
