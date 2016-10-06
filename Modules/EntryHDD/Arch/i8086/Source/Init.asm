@@ -54,14 +54,14 @@ BootReal:
 
     // Next we construct the Disk Access Packet. We push the structure onto the
     // stack in reverse order, as the stack grows downward.
-    push 0x0000 // Disk LBA word 3
-    push 0x0000 // Disk LBA word 2.
-    push 0x0000 // Disk LBA word 1.
-    push STAGE2_SECTOR_ADDRESS // Disk LBA word 0.
-    push 0x0000 // Transfer buffer segment.
-    push 0x0600 // Transfer buffer offset.
-    push STAGE2_SECTOR_SIZE // Number of sectors to transfer.
-    push 0x0010 // Size of packet in bytes.
+    push 0x0000
+    push 0x0000
+    push 0x0000
+    push STAGE2_SECTOR_ADDRESS
+    push 0x0000
+    push 0x0600
+    push STAGE2_SECTOR_SIZE
+    push 0x0010
 
     // Now we load the address of the Disk Access Packet and store it in the SI
     // register. We then load the function number into the AH register.
@@ -81,3 +81,6 @@ BootReal:
 
     // Now that our second stage is loaded, we can jump to it!
     jmp 0x0000:0x0600
+
+.org 510
+.word 0xAA55

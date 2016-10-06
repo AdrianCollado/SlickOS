@@ -11,7 +11,7 @@
 ###############################################################################
 # Set the default target
 .PHONY: all
-all: x86_64-BootHDD
+all: x86_64-BootHDD x86_64-EntryHDD
 
 .PHONY: clean
 clean:
@@ -107,8 +107,9 @@ $$(eval $$(call __RULES,$1,$$(firstword $2)))
 $$(firstword $2)-$1: Build/Binaries/$$(firstword $2)-$1.sys
 endef
 
-$(eval $(call __PROJECT,BootHDD,x86_64 i386 i8086))
-$(eval $(call __PROJECT,Gloss,x86_64 i386 i8086))
+$(eval $(call __PROJECT,EntryHDD,x86_64 i8086))
+$(eval $(call __PROJECT,BootHDD,i386 i8086))
+#$(eval $(call __PROJECT,Gloss,x86_64 i386 i8086))
 
 ###############################################################################
 # SlickOS Hard Disk Image                                                     #
@@ -116,11 +117,12 @@ $(eval $(call __PROJECT,Gloss,x86_64 i386 i8086))
 .PHONY: ImageHDD
 ImageHDD: Build/Images/SlickOS.raw
 
-Build/Images/SlickOS.raw: Build/Binaries/x86_64/BootHDD.sys
+Build/Images/SlickOS.raw: Build/Binaries/x86_64/EntryHDD.sys Build/Binaries/i386/BootHDD.sys
 	@echo "Building Boot Image (Hard Disk)"
 	@mkdir -p $(@D) Build/Structure/HDD
 	@dd if=/dev/zero of=$@ bs=512 count=204800 status=none
-	@dd if=$< of=$@ conv=notrunc bs=512 count=128 status=none
+	@dd if=$< of=$@ conv=notrunc bs=512 count=1 status=none
+	@dd if=$(word 2,$^) of=$@ conv=notrunc seek=1 bs=512 count=10 status=none
 	@sleep .1
 
 ###############################################################################

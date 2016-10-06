@@ -53,13 +53,13 @@ Build/SlickOS.img: Build/Binaries/Boot/Floppy/BOOTSECT.BIN
 #	@sleep .1
 
 run: all
-	@qemu-system-x86_64 -fda Build/SlickOS.img -boot a -m 2G
+	@qemu-system-x86_64 -fda Build/SlickOS.img -boot a -m 16M
 #	@/opt/local/util/bin/bochs 'cpu: ips=100000000' 'boot:floppy' 'clock: sync=realtime, time0=utc' 'floppya: 1_44=Build/SlickOS.img, status=inserted' 'magic_break: enabled=1' #'romimage: file=/opt/local/util/share/bochs/bios.bin-1.7.5, address=0xfffc0000' 'vgaromimage: file=/opt/local/util/share/bochs/VGABIOS-lgpl-latest'
 #	/opt/local/util/bin/bochs
 #	bochs
 
 run-hdd: all
-	@qemu-system-x86_64 -hda Build/SlickOS.raw -boot c -m 2G
+	@qemu-system-x86_64 -hda Build/SlickOS.raw -boot c -m 16M
 
 .PHONY: Boot.Floppy
 Boot.Floppy:
