@@ -1,5 +1,5 @@
 OUTPUT_FORMAT("binary")
-phys = 0x0600;
+phys = 0x7c00;
 SECTIONS {
     SECTION_ALL_START = .;
     .text (phys) : {

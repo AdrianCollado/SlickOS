@@ -12,7 +12,7 @@ extern "C" void Entry(void) {
     eax = 0;
     Gloss::CPU86::ID(&eax, &ebx, &ecx, &edx);
 
-    char *textArr;
+    char *textArr = nullptr;
     textArr[0] = (char)(ebx >> 0);
     textArr[1] = (char)(ebx >> 8);
     textArr[2] = (char)(ebx >> 16);
