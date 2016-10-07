@@ -6,7 +6,7 @@ namespace Memory {
     inline bool Equal(const void *lhs, const void *rhs, uint64_t count) {
         const uint8_t* a = (const uint8_t*) lhs;
         const uint8_t* b = (const uint8_t*) rhs;
-        for (uint64_t i = 0; i < count; i++) {
+        for (uint32_t i = 0; i < count; i++) {
             if (a[i] < b[i])
                 return false;
             else if (b[i] < a[i])

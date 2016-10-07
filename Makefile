@@ -11,7 +11,7 @@
 ###############################################################################
 # Set the default target
 .PHONY: all
-all: x86_64-BootHDD x86_64-EntryHDD
+all: i386-BootHDD i386-EntryHDD
 
 .PHONY: clean
 clean:
@@ -25,12 +25,10 @@ rebuild: clean all
 MAKEFILE += --no-builtin-rules
 .SUFFIXES:
 
-CC := clang
-CXX := clang++
-AS_x86_64 := as
-AS_i386 := as
-AS_i8086 := as
-LD := lld
+CC := gcc
+CXX := g++
+AS := as
+LD := ld
 
 ###############################################################################
 # Targets                                                                     #
@@ -39,34 +37,41 @@ define __ARCH_RULES
 Build/Arch-Objects/$1/$2/%.o: Modules/$1/Arch/$2/Source/%.c Makefile
 	@echo "    Compiling $$(<F)   ->   $$(@F)"
 	@mkdir -p $$(@D)
-	@$$(CC) -target $2-elf $$($1_CPPFLAGS) $$($1_CFLAGS) -MMD -MP -MT Build/Arch-Dependencies/$1/$2/$$*.d -c -o $$@ $$<
+	@$2-elf-$$(CC) $$($1_CPPFLAGS) $$($1_CFLAGS) -MMD -MP -MT Build/Arch-Dependencies/$1/$2/$$*.d -c -o $$@ $$<
 
 Build/Arch-Objects/$1/$2/%.o: Modules/$1/Arch/$2/Source/%.cpp Makefile
 	@echo "    Compiling $$(<F)   ->   $$(@F)"
 	@mkdir -p $$(@D)
-	@$$(CXX) -target $2-elf $$($1_CPPFLAGS) $$($1_CXXFLAGS) -MMD -MP -MT Build/Arch-Dependencies/$1/$2/$$*.d -c -o $$@ $$<
+	@$2-elf-$$(CXX) $$($1_CPPFLAGS) $$($1_CXXFLAGS) -MMD -MP -MT Build/Arch-Dependencies/$1/$2/$$*.d -c -o $$@ $$<
 
+ifeq "$2" "i8086"
 Build/Arch-Objects/$1/$2/%.o: Modules/$1/Arch/$2/Source/%.asm Makefile
 	@echo "    Compiling $$(<F)   ->   $$(@F)"
 	@mkdir -p $$(@D)
-	@$$(AS_$2) $$($1_ASFLAGS) -o $$@ $$<
+	@i386-elf-$$(AS) $$($1_ASFLAGS) -o $$@ $$<
+else
+Build/Arch-Objects/$1/$2/%.o: Modules/$1/Arch/$2/Source/%.asm Makefile
+	@echo "    Compiling $$(<F)   ->   $$(@F)"
+	@mkdir -p $$(@D)
+	@$2-elf-$$(AS) $$($1_ASFLAGS) -o $$@ $$<
+endif
 endef
 
 define __RULES
 Build/Objects/$1/$2/%.o: Modules/$1/Source/%.c Makefile
 	@echo "    Compiling $$(<F)   ->   $$(@F)"
 	@mkdir -p $$(@D)
-	@$$(CC) -target $2-elf $$($1_CPPFLAGS) $$($1_CFLAGS) -MMD -MP -MT Build/Dependencies/$1/$$*.d -c -o $$@ $$<
+	@$2-elf-$$(CC) $$($1_CPPFLAGS) $$($1_CFLAGS) -MMD -MP -MT Build/Dependencies/$1/$$*.d -c -o $$@ $$<
 
 Build/Objects/$1/$2/%.o: Modules/$1/Source/%.cpp Makefile
 	@echo "    Compiling $$(<F)   ->   $$(@F)"
 	@mkdir -p $$(@D)
-	@$$(CXX) -target $2-elf $$($1_CPPFLAGS) $$($1_CXXFLAGS) -MMD -MP -MT Build/Dependencies/$1/$$*.d -c -o $$@ $$<
+	@$2-elf-$$(CXX) $$($1_CPPFLAGS) $$($1_CXXFLAGS) -MMD -MP -MT Build/Dependencies/$1/$$*.d -c -o $$@ $$<
 
 Build/Binaries/$2/$1.sys: $$($1_OBJINIT) $$($1_OBJC) $$($1_OBJCXX) $$($1_OBJASM)
 	@echo "    Linking $$(@F)"
 	@mkdir -p $$(@D)
-	@$$(CC) -target $2-elf $$($1_LDFLAGS) -o $$@ -T Modules/$1/Link.ld $$^
+	@$2-elf-$$(CC) $$($1_LDFLAGS) -o $$@ -T Modules/$1/Link.ld $$^
 
 Build/Binaries/$2-$1.sys: Build/Binaries/$2/$1.sys
 	@cp $$^ $$@
@@ -107,7 +112,7 @@ $$(eval $$(call __RULES,$1,$$(firstword $2)))
 $$(firstword $2)-$1: Build/Binaries/$$(firstword $2)-$1.sys
 endef
 
-$(eval $(call __PROJECT,EntryHDD,x86_64 i8086))
+$(eval $(call __PROJECT,EntryHDD,i386 i8086))
 $(eval $(call __PROJECT,BootHDD,i386 i8086))
 #$(eval $(call __PROJECT,Gloss,x86_64 i386 i8086))
 
@@ -117,7 +122,7 @@ $(eval $(call __PROJECT,BootHDD,i386 i8086))
 .PHONY: ImageHDD
 ImageHDD: Build/Images/SlickOS.raw
 
-Build/Images/SlickOS.raw: Build/Binaries/x86_64/EntryHDD.sys Build/Binaries/i386/BootHDD.sys
+Build/Images/SlickOS.raw: Build/Binaries/i386/EntryHDD.sys Build/Binaries/i386/BootHDD.sys
 	@echo "Building Boot Image (Hard Disk)"
 	@mkdir -p $(@D) Build/Structure/HDD
 	@dd if=/dev/zero of=$@ bs=512 count=204800 status=none

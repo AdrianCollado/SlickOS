@@ -27,6 +27,9 @@ Boot16:
     call I8086.CPU.Query
     call I8086.CPU.GDT.Load
 
+    cmp byte ptr [BSS.A20.Status], 0x01
+    jne Boot16.Failure
+
     cli
     mov eax, cr0
     or al, 0x01
@@ -34,3 +37,11 @@ Boot16:
 
     jmp 0x08:Boot32
     
+Boot16.Failure:
+    mov eax, 0xb8000
+    mov word ptr [eax], 0x4040
+
+Boot16.Failure.Loop:
+    cli
+    hlt
+    jmp Boot16.Failure.Loop

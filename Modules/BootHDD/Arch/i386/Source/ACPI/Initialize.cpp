@@ -6,9 +6,9 @@ bool ACPI::Initialize(void) {
     Console cons;
     // Find the RSDP/XSDP
     uint8_t *ptr = (uint8_t *)(0x0000);
-    uint64_t sig = 0x2052545020445352;
+    const char *sig = "RSD PTR ";
     for (int i = 0; i < 0xFFFFF; i += 16) {
-        if (Memory::Equal(ptr + i, &sig, 8)) {
+        if (Memory::Equal(ptr + i, sig, 8)) {
             RSDP *rsdp = (RSDP *)(ptr + i);
             if (rsdp->Revision == 0) {
                 uint8_t *structPtr = (uint8_t *)(rsdp);
@@ -18,7 +18,7 @@ bool ACPI::Initialize(void) {
                 }
                 if (val == 0) {
                     m_RSDP = rsdp;
-                    m_XSDP = nullptr;
+                    // m_XSDP = nullptr;
                 }
             }
             else {
@@ -29,7 +29,7 @@ bool ACPI::Initialize(void) {
                 }
                 if (val == 0) {
                     m_RSDP = rsdp;
-                    m_XSDP = (XSDP *)(rsdp);
+                    // m_XSDP = (XSDP *)(rsdp);
                     break;
                 }
             }
@@ -45,8 +45,8 @@ bool ACPI::Initialize(void) {
     cons.Print((uint32_t)m_RSDP->Checksum);
     cons.Print(" - ");
     cons.Print(arr);
-    cons.Print(" - ");
-    cons.Print((uint32_t)m_RSDP);
+    // cons.Print(" - ");
+    // cons.Print((uint32_t)m_RSDP);
     cons.Print(" - ");
     cons.Print((uint32_t)m_RSDP->Revision);
     cons.Print(" - ");
@@ -58,9 +58,9 @@ bool ACPI::Initialize(void) {
         return false;
     }
     else {
-        // uint64_t addr = m_XSDP->XSDTAddress;
-        // m_XSDT = (XSDT *)(addr);
-        //if (!ValidateTable(m_XSDT)) return false;
+        uint32_t addr = m_RSDP->RSDTAddress;
+        m_RSDT = (RSDT *)(addr);
+        if (!ValidateTable(m_RSDT)) return false;
     }
 
     return true;

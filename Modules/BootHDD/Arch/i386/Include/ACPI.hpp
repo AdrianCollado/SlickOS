@@ -12,12 +12,12 @@ public:
         uint32_t RSDTAddress;
     } __attribute__((packed));
 
-    struct XSDP : public RSDP {
-        uint32_t Length;
-        uint64_t XSDTAddress;
-        uint8_t TotalChecksum;
-        uint8_t Reserved[3];
-    } __attribute__((packed));
+    // struct XSDP : public RSDP {
+    //     uint32_t Length;
+    //     uint64_t XSDTAddress;
+    //     uint8_t TotalChecksum;
+    //     uint8_t Reserved[3];
+    // } __attribute__((packed));
 
     struct Header {
         char Signature[4];
@@ -35,9 +35,9 @@ public:
         uint32_t *Entries;
     } __attribute__((packed));
 
-    struct XSDT : public Header {
-        uint64_t *Entries;
-    } __attribute__((packed));
+    // struct XSDT : public Header {
+    //     uint64_t *Entries;
+    // } __attribute__((packed));
 
     struct FADT : public Header {
 
@@ -46,16 +46,16 @@ public:
     bool Initialize(void);
 
     RSDP *GetRSDP(void);
-    XSDT *GetXSDT(void);
+    //XSDT *GetXSDT(void);
     FADT *GetFADT(void);
 
 private:
     bool ValidateTable(void *ptr);
 
     RSDP *m_RSDP;
-    XSDP *m_XSDP;
+    //XSDP *m_XSDP;
 
     RSDT *m_RSDT;
-    XSDT *m_XSDT;
+    //XSDT *m_XSDT;
     FADT *m_FADT;
 };

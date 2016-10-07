@@ -31,6 +31,7 @@ cd $GCC_DIR
 cd ..
 
 if [ "$BINUTILS_VERSION" != "`ld -version | grep ^GNU | sed 's/^.* //g'`" ]
+then
     mkdir binutils-sys
     cd binutils-sys
     ../$BINUTILS_DIR/configure --disable-nls --disable-werror --with-sysroot
@@ -40,6 +41,7 @@ if [ "$BINUTILS_VERSION" != "`ld -version | grep ^GNU | sed 's/^.* //g'`" ]
 fi
 
 if [ "$GCC_VERSION" != "`gcc -dumpversion`" ]
+then
     mkdir gcc-sys
     cd gcc-sys
     ../$GCC_DIR/configure --disable-nls --enable-languages=c,c++
@@ -49,6 +51,7 @@ if [ "$GCC_VERSION" != "`gcc -dumpversion`" ]
 fi
     
 if [ "$BINUTILS_VERSION" != "`$TARGET-ld -version | grep ^GNU | sed 's/^.* //g'`" ]
+then
     mkdir binutils-os
     cd binutils-os
     ../$BINUTILS_DIR/configure --target=$TARGET --program-prefix=$TARGET- --with-sysroot --disable-nls --disable-werror
@@ -58,6 +61,7 @@ if [ "$BINUTILS_VERSION" != "`$TARGET-ld -version | grep ^GNU | sed 's/^.* //g'`
 fi
 
 if [ "$GCC_VERSION" != "`$TARGET-gcc -dumpversion`" ]
+then
     mkdir gcc-os
     cd gcc-os
     ../$GCC_DIR/configure --target=$TARGET --program-prefix=$TARGET- --disable-nls --enable-languages=c,c++ --without-headers
