@@ -19,9 +19,13 @@
 BSS.Memory:
     .global BSS.Memory.Map
     BSS.Memory.Map:
+        .global I8086_Memory_Map_Address
         .global BSS.Memory.Map.Address
+        I8086_Memory_Map_Address:
         BSS.Memory.Map.Address:                             .skip 0x08, 0x00
+        .global I8086_Memory_Map_Count
         .global BSS.Memory.Map.Count
+        I8086_Memory_Map_Count:
         BSS.Memory.Map.Count:                               .skip 0x08, 0x00
         .global BSS.Memory.Map.End
         BSS.Memory.Map.End:                                 .skip 0x08, 0x00

@@ -11,7 +11,7 @@
 ###############################################################################
 # Set the default target
 .PHONY: all
-all: i386-BootHDD i386-EntryHDD
+all: x86_64-BootHDD x86_64-EntryHDD
 
 .PHONY: clean
 clean:
@@ -34,36 +34,36 @@ LD := ld
 # Targets                                                                     #
 ###############################################################################
 define __ARCH_RULES
-Build/Arch-Objects/$1/$2/%.o: Modules/$1/Arch/$2/Source/%.c Makefile
+Build/Arch-Objects/$1/$2/%.c.o: Modules/$1/Arch/$2/Source/%.c Makefile
 	@echo "    Compiling $$(<F)   ->   $$(@F)"
 	@mkdir -p $$(@D)
 	@$2-elf-$$(CC) $$($1_CPPFLAGS) $$($1_CFLAGS) -MMD -MP -MT Build/Arch-Dependencies/$1/$2/$$*.d -c -o $$@ $$<
 
-Build/Arch-Objects/$1/$2/%.o: Modules/$1/Arch/$2/Source/%.cpp Makefile
+Build/Arch-Objects/$1/$2/%.cpp.o: Modules/$1/Arch/$2/Source/%.cpp Makefile
 	@echo "    Compiling $$(<F)   ->   $$(@F)"
 	@mkdir -p $$(@D)
 	@$2-elf-$$(CXX) $$($1_CPPFLAGS) $$($1_CXXFLAGS) -MMD -MP -MT Build/Arch-Dependencies/$1/$2/$$*.d -c -o $$@ $$<
 
-ifeq "$2" "i8086"
-Build/Arch-Objects/$1/$2/%.o: Modules/$1/Arch/$2/Source/%.asm Makefile
+# ifeq "$2" "i8086"
+Build/Arch-Objects/$1/$2/%.asm.o: Modules/$1/Arch/$2/Source/%.asm Makefile
 	@echo "    Compiling $$(<F)   ->   $$(@F)"
 	@mkdir -p $$(@D)
-	@i386-elf-$$(AS) $$($1_ASFLAGS) -o $$@ $$<
-else
-Build/Arch-Objects/$1/$2/%.o: Modules/$1/Arch/$2/Source/%.asm Makefile
-	@echo "    Compiling $$(<F)   ->   $$(@F)"
-	@mkdir -p $$(@D)
-	@$2-elf-$$(AS) $$($1_ASFLAGS) -o $$@ $$<
-endif
+	@x86_64-elf-$$(AS) $$($1_ASFLAGS) -c -o $$@ $$<
+# else
+# Build/Arch-Objects/$1/$2/%.o: Modules/$1/Arch/$2/Source/%.asm Makefile
+# 	@echo "    Compiling $$(<F)   ->   $$(@F)"
+# 	@mkdir -p $$(@D)
+# 	@$2-elf-$$(AS) $$($1_ASFLAGS) -o $$@ $$<
+# endif
 endef
 
 define __RULES
-Build/Objects/$1/$2/%.o: Modules/$1/Source/%.c Makefile
+Build/Objects/$1/$2/%.c.o: Modules/$1/Source/%.c Makefile
 	@echo "    Compiling $$(<F)   ->   $$(@F)"
 	@mkdir -p $$(@D)
 	@$2-elf-$$(CC) $$($1_CPPFLAGS) $$($1_CFLAGS) -MMD -MP -MT Build/Dependencies/$1/$$*.d -c -o $$@ $$<
 
-Build/Objects/$1/$2/%.o: Modules/$1/Source/%.cpp Makefile
+Build/Objects/$1/$2/%.cpp.o: Modules/$1/Source/%.cpp Makefile
 	@echo "    Compiling $$(<F)   ->   $$(@F)"
 	@mkdir -p $$(@D)
 	@$2-elf-$$(CXX) $$($1_CPPFLAGS) $$($1_CXXFLAGS) -MMD -MP -MT Build/Dependencies/$1/$$*.d -c -o $$@ $$<
@@ -78,21 +78,21 @@ Build/Binaries/$2-$1.sys: Build/Binaries/$2/$1.sys
 endef
 
 define __ARCH_FILES
-$1_OBJC += $$(addprefix Build/Arch-Objects/$1/$2/,$$(patsubst %.c,%.o,$$(shell find -L Modules/$1/Arch/$2/Source -type f -name '*.c' 2>&1 | grep -v find | sed 's/Modules\/$1\/Arch\/$2\/Source\///g')))
-$1_OBJCXX += $$(addprefix Build/Arch-Objects/$1/$2/,$$(patsubst %.cpp,%.o,$$(shell find -L Modules/$1/Arch/$2/Source -type f -name '*.cpp' 2>&1 | grep -v find | sed 's/Modules\/$1\/Arch\/$2\/Source\///g')))
-$1_OBJASM += $$(addprefix Build/Arch-Objects/$1/$2/,$$(patsubst %.asm,%.o,$$(shell find -L Modules/$1/Arch/$2/Source -type f -name '*.asm' 2>&1 | grep -v find | sed 's/Modules\/$1\/Arch\/$2\/Source\///g')))
+$1_OBJC += $$(addprefix Build/Arch-Objects/$1/$2/,$$(patsubst %.c,%.c.o,$$(shell find -L Modules/$1/Arch/$2/Source -type f -name '*.c' 2>&1 | grep -v find | sed 's/Modules\/$1\/Arch\/$2\/Source\///g')))
+$1_OBJCXX += $$(addprefix Build/Arch-Objects/$1/$2/,$$(patsubst %.cpp,%.cpp.o,$$(shell find -L Modules/$1/Arch/$2/Source -type f -name '*.cpp' 2>&1 | grep -v find | sed 's/Modules\/$1\/Arch\/$2\/Source\///g')))
+$1_OBJASM += $$(addprefix Build/Arch-Objects/$1/$2/,$$(patsubst %.asm,%.asm.o,$$(shell find -L Modules/$1/Arch/$2/Source -type f -name '*.asm' 2>&1 | grep -v find | sed 's/Modules\/$1\/Arch\/$2\/Source\///g')))
 
-$1_DEPC += $$(addprefix Build/Arch-Dependencies/$1/$2/,$$(patsubst %.c,%.d,$$(shell find -L Modules/$1/Arch/$2/Source -type f -name '*.c' 2>&1 | grep -v find | sed 's/Modules\/$1\/Arch\/$2\/Source\///g')))
-$1_DEPCXX += $$(addprefix Build/Arch-Dependencies/$1/$2/,$$(patsubst %.cpp,%.d,$$(shell find -L Modules/$1/Arch/$2/Source -type f -name '*.cpp' 2>&1 | grep -v find | sed 's/Modules\/$1\/Arch\/$2\/Source\///g')))
+$1_DEPC += $$(addprefix Build/Arch-Dependencies/$1/$2/,$$(patsubst %.c,%.c.d,$$(shell find -L Modules/$1/Arch/$2/Source -type f -name '*.c' 2>&1 | grep -v find | sed 's/Modules\/$1\/Arch\/$2\/Source\///g')))
+$1_DEPCXX += $$(addprefix Build/Arch-Dependencies/$1/$2/,$$(patsubst %.cpp,%.cpp.d,$$(shell find -L Modules/$1/Arch/$2/Source -type f -name '*.cpp' 2>&1 | grep -v find | sed 's/Modules\/$1\/Arch\/$2\/Source\///g')))
 $1_INCASM := $$(shell find -L Modules/$1/Arch/$2/Source -type f -name '*.inc' 2>&1 | grep -v find)
 endef
 
 define __FILES
-$1_OBJC := $$(addprefix Build/Objects/$1/$2/,$$(patsubst %.c,%.o,$$(shell find -L Modules/$1/Source -type f -name '*.c' 2>&1 | grep -v find | sed 's/Modules\/$1\/Source\///g')))
-$1_OBJCXX := $$(addprefix Build/Objects/$1/$2/,$$(patsubst %.cpp,%.o,$$(shell find -L Modules/$1/Source -type f -name '*.cpp' 2>&1 | grep -v find | sed 's/Modules\/$1\/Source\///g')))
+$1_OBJC := $$(addprefix Build/Objects/$1/$2/,$$(patsubst %.c,%.c.o,$$(shell find -L Modules/$1/Source -type f -name '*.c' 2>&1 | grep -v find | sed 's/Modules\/$1\/Source\///g')))
+$1_OBJCXX := $$(addprefix Build/Objects/$1/$2/,$$(patsubst %.cpp,%.cpp.o,$$(shell find -L Modules/$1/Source -type f -name '*.cpp' 2>&1 | grep -v find | sed 's/Modules\/$1\/Source\///g')))
 
-$1_DEPC := $$(addprefix Build/Dependencies/$1/$2/,$$(patsubst %.c,%.d,$$(shell find -L Modules/$1/Source -type f -name '*.c' 2>&1 | grep -v find | sed 's/Modules\/$1\/Source\///g')))
-$1_DEPCXX := $$(addprefix Build/Dependencies/$1/$2/,$$(patsubst %.cpp,%.d,$$(shell find -L Modules/$1/Source -type f -name '*.cpp' 2>&1 | grep -v find | sed 's/Modules\/$1\/Source\///g')))
+$1_DEPC := $$(addprefix Build/Dependencies/$1/$2/,$$(patsubst %.c,%.c.d,$$(shell find -L Modules/$1/Source -type f -name '*.c' 2>&1 | grep -v find | sed 's/Modules\/$1\/Source\///g')))
+$1_DEPCXX := $$(addprefix Build/Dependencies/$1/$2/,$$(patsubst %.cpp,%.cpp.d,$$(shell find -L Modules/$1/Source -type f -name '*.cpp' 2>&1 | grep -v find | sed 's/Modules\/$1\/Source\///g')))
 endef
 
 define __DEPENDENCIES
@@ -112,8 +112,8 @@ $$(eval $$(call __RULES,$1,$$(firstword $2)))
 $$(firstword $2)-$1: Build/Binaries/$$(firstword $2)-$1.sys
 endef
 
-$(eval $(call __PROJECT,EntryHDD,i386 i8086))
-$(eval $(call __PROJECT,BootHDD,i386 i8086))
+$(eval $(call __PROJECT,EntryHDD,x86_64 i8086))
+$(eval $(call __PROJECT,BootHDD,x86_64 i386 i8086))
 #$(eval $(call __PROJECT,Gloss,x86_64 i386 i8086))
 
 ###############################################################################
@@ -122,12 +122,12 @@ $(eval $(call __PROJECT,BootHDD,i386 i8086))
 .PHONY: ImageHDD
 ImageHDD: Build/Images/SlickOS.raw
 
-Build/Images/SlickOS.raw: Build/Binaries/i386/EntryHDD.sys Build/Binaries/i386/BootHDD.sys
+Build/Images/SlickOS.raw: Build/Binaries/x86_64/EntryHDD.sys Build/Binaries/x86_64/BootHDD.sys
 	@echo "Building Boot Image (Hard Disk)"
 	@mkdir -p $(@D) Build/Structure/HDD
 	@dd if=/dev/zero of=$@ bs=512 count=204800 status=none
 	@dd if=$< of=$@ conv=notrunc bs=512 count=1 status=none
-	@dd if=$(word 2,$^) of=$@ conv=notrunc seek=1 bs=512 count=10 status=none
+	@dd if=$(word 2,$^) of=$@ conv=notrunc seek=1 bs=512 count=100 status=none
 	@sleep .1
 
 ###############################################################################

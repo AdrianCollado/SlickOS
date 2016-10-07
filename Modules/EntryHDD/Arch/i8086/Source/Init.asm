@@ -21,7 +21,7 @@
 .section .text
 
 // We need the size and location of stage 2 on the disk.
-.equ STAGE2_SECTOR_SIZE,        0x0010
+.equ STAGE2_SECTOR_SIZE,        100
 .equ STAGE2_SECTOR_ADDRESS,     0x0001
 
 // We define some constants.
@@ -46,8 +46,8 @@ BootReal:
     mov [0x0500 + BOOT_DRIVE_OFFSET], dl
 
     // Next we establish our stack frame.
-    push bp
-    mov bp, sp
+    //push bp
+    //mov bp, sp
 
     // Now we align the stack to the next lowest two-byte boundary.
     and sp, 0xFFFE
@@ -77,7 +77,11 @@ BootReal:
     pop ax
 
     // We finally reset our stack frame.
-    leave
+    //mov sp, bp
+    //pop bp
+
+    mov eax, 0xb8000
+    mov word ptr [eax], 0x4040
 
     // Now that our second stage is loaded, we can jump to it!
     jmp 0x0000:0x0600
