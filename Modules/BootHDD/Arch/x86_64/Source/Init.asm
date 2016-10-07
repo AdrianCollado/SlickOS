@@ -31,10 +31,17 @@ Boot64:
     mov ss, ax
     mov rsp, 0x20000
 
-    mov rcx, 0x01F4
-    mov rax, 0x0720072007200720
-    mov rdi, 0xb8000
-    rep stosq
+    call AMD64.Console.Init
+
+    mov word ptr [0xb8000], 0x4040
+
+    cli
+
+    call AMD64.IDT.Init
+    call AMD64.IDT.Load
+    call AMD64.PIC.Init
+
+    sti
 
     call Entry64
 

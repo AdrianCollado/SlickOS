@@ -21,23 +21,25 @@
 .section .text
 
 Boot16:
-    call I8086.Memory.ClearBSS
-    call I8086.Memory.Map
-    call I8086.A20.Enable
-    call I8086.CPU.Query
-    call I8086.CPU.GDT.Load
+    mov eax, 0xb8000
+    mov word ptr [eax], 0x4040
+    //call I8086.Memory.ClearBSS
+    //call I8086.Memory.Map
+    //call I8086.A20.Enable
+    //call I8086.CPU.Query
+    //call I8086.CPU.GDT.Load
 
-    cmp byte ptr [BSS.A20.Status], 0x01
-    jne Boot16.Failure
+    //cmp byte ptr [BSS.A20.Status], 0x01
+    //jmp Boot16.Failure
 
-    cli
-    mov eax, cr0
-    or al, 0x01
-    mov cr0, eax
+    //cli
+    //mov eax, cr0
+    //or al, 0x01
+    //mov cr0, eax
 
-    jmp 0x08:Boot32
+    //jmp 0x08:Boot32
     
-Boot16.Failure:
+//Boot16.Failure:
     mov eax, 0xb8000
     mov word ptr [eax], 0x4040
 
